@@ -9,4 +9,7 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
+    def filter_client(self):
+        return Client.objects.filter(id=self.request.kwargs.get('client_id'))
+
 
