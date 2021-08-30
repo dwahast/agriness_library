@@ -1,12 +1,25 @@
 from django.contrib import admin
-from client.models import Client
+from client.models import Client, Book, Reserve
 
 
-# Register your models here.
 class Clients(admin.ModelAdmin):
     list_display = ('id', 'name', 'doc_id')
     list_display_links = ('id', 'name')
     search_fields = ('name',)
 
 
+class Books(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    list_display_links = ('id', 'name')
+    search_fields = ('name',)
+
+
+class Reserves(admin.ModelAdmin):
+    list_display = ('id', 'client_id', 'book_id')
+    list_display_links = ('id', 'client_id', 'book_id')
+    search_fields = ('id',)
+
+
 admin.site.register(Client, Clients)
+admin.site.register(Book, Books)
+admin.site.register(Reserve, Reserves)

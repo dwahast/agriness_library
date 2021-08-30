@@ -1,12 +1,13 @@
-from django.urls import path, include
-from client.views import ClientViewSet
-from rest_framework import routers
+from client.views import ClientViewSet, BookViewSet, ReserveViewSet
+from rest_framework_extensions.routers import ExtendedSimpleRouter
 
-router = routers.DefaultRouter()
+router = ExtendedSimpleRouter()
 
-router.register(r'<client_id>', ClientViewSet)
-router.register(r'', ClientViewSet)
+router\
+    .register(r'client', ClientViewSet, basename="client")\
+    .register(r'books', ReserveViewSet, basename="reserve", parents_query_lookups=["client"])
+    # .register(r'books', BookViewSet, basename="book", parents_query_lookups=["client"])\
 
-urlpatterns = [
-    path('', include(router.urls))
-]
+router.register(r'books', BookViewSet, basename="book")
+
+urlpatterns = router.urls
