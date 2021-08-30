@@ -19,6 +19,19 @@ class BookViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = BookSerializer
 
 
+# class ReturnViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+#     queryset = Reserve.objects.all()
+#     serializer_class = ReserveSerializer
+#     print("\n\nEstoy aka\n\n")
+#
+#     @action(methods=["PUT"], detail=True)
+#     def put(self, request, parent_lookup_client, pk):
+#         print("\n\nEstoy aki\n\n")
+#         client = Client.objects.get(id=parent_lookup_client)
+#         book = Book.objects.get(id=pk)
+#         return Response(data={"resultCode": 0, "message": f"livro {book.name} reservado com sucesso!"})
+
+
 class ReserveViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = Reserve.objects.all()
     serializer_class = ReserveSerializer
@@ -60,6 +73,32 @@ class ReserveViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 print("Sem atraso!")
 
         return queryset
+
+    def put(self, request, parent_lookup_id, parent_lookup_book_id):
+        print(parent_lookup_id, parent_lookup_book_id)
+        queryset = super().get_queryset()
+        reserves = queryset.filter(client_id=parent_lookup_id, book_id=parent_lookup_book_id, return_date=None)
+
+        book = Book.objects.get(id=parent_lookup_book_id)
+        book.reserved = False
+        book.save()
+
+        print(reserves)
+        reserve = reserves.first()
+        if len(reserves) > 1:
+            print("[ERROR] Mais de uma reserva do mesmo livro!")
+
+        if len(reserves) == 0:
+            return Response(
+                data={
+                    "resultCode": 0,
+                    "message": f"livro já entregue ou nunca alugado com sucesso!"
+                })
+
+        reserve.return_date = timezone.now()
+        reserve.save()
+
+        return Response(data={"resultCode": 0, "message": f"livro {reserve.book_name} entregue com sucesso!"})
 
     @action(methods=["POST"], detail=True)
     def reserve(self, request, parent_lookup_client, pk):

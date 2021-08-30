@@ -9,13 +9,13 @@ class Clients(admin.ModelAdmin):
 
 
 class Books(admin.ModelAdmin):
-    list_display = ('id', 'name')
+    list_display = ('id', 'name', 'reserved')
     list_display_links = ('id', 'name')
-    search_fields = ('name',)
+    search_fields = ('name', 'reserved')
 
 
 class Reserves(admin.ModelAdmin):
-    list_display = ('id', 'client_id', 'book_id')
+    list_display = ('id', 'client_id', 'book_id', 'client_name', 'book_name', 'reservation_date', 'return_date', 'fees')
     list_display_links = ('id', 'client_id', 'book_id')
     search_fields = ('id',)
 
