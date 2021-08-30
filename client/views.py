@@ -7,7 +7,7 @@ from client.models import Client, Book, Reserve
 from client.serializer import ClientSerializer, BookSerializer, ReserveSerializer
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-
+RETURN_LIMIT = 7
 # Create your views here.
 class ClientViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = Client.objects.all()
@@ -23,34 +23,37 @@ class ReserveViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = Reserve.objects.all()
     serializer_class = ReserveSerializer
 
-    @action(methods=["GET"], detail=False, url_path='')
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()
         for reserved_book in queryset.all():
-            print(f"Dias de aluguel {reserved_book.book.name}: {(timezone.now() - reserved_book.reservation_date).days}")
+            print(f"Book: {reserved_book.book.name}")
+            print(f"Reserved days: {(timezone.now() - reserved_book.reservation_date).days}")
+            print(f"Returned: {reserved_book.return_date is not None}")
 
-            if timezone.now() > reserved_book.reservation_date + timezone.timedelta(days=7):
-
-                delta = timezone.now() - reserved_book.reservation_date
-                print(f"Em atraso {delta.days} dias!")
+            due_date = reserved_book.reservation_date + timezone.timedelta(days=RETURN_LIMIT)
+            if timezone.now() > due_date \
+                    or reserved_book.return_date is not None:
+                print(f"Até: {due_date}")
+                delta = timezone.now() - due_date
+                print(f"Lateness days: {delta.days}")
                 if delta.days <= 3:
                     """Até 3 dias 3% 0.2%"""
                     new_fee = reserved_book.book.value * 0.03 + delta.days * (0.002 * reserved_book.book.value)
-                    print(f"Taxa de atraso. Até 3 dias (3% 0.2%):{new_fee}")
+                    print(f"Taxa de atraso. Up to 3 days (3% 0.2%):{new_fee}")
                     reserved_book.fees = new_fee
                     reserved_book.save()
 
                 elif 3 < delta.days <= 5:
                     """Acima 3 dias 5% 0.4%"""
                     new_fee = reserved_book.book.value * 0.05 + delta.days * (0.002 * reserved_book.book.value)
-                    print(f"Taxa de atraso. Acima 3 dias (5% 0.4%):{new_fee}")
+                    print(f"Lateness Fees. Higher than 3 days (5% 0.4%):{new_fee}")
                     reserved_book.fees = new_fee
                     reserved_book.save()
 
                 elif delta.days > 5:
                     """Acima 5 dias 7% 0.6%"""
                     new_fee = reserved_book.book.value * 0.07 + delta.days * (0.006 * reserved_book.book.value)
-                    print(f"Taxa de atraso. Acima 5 dias (7% 0.6%):{new_fee}")
+                    print(f"Taxa de atraso. Higher than 5 days (7% 0.6%):{new_fee}")
                     reserved_book.fees = new_fee
                     reserved_book.save()
             else:
