@@ -13,6 +13,7 @@ class Client(models.Model):
 class Book(models.Model):
     name = models.CharField(max_length=20)
     reserved = models.BooleanField(default=False)
+    value = models.FloatField(default=50.0)
 
     def __str__(self):
         return self.name
@@ -25,6 +26,7 @@ class Reserve(models.Model):
     book_name = models.CharField(default=book.name, blank=True, null=True, max_length=20)
     reservation_date = models.DateTimeField(default=timezone.now, verbose_name='date reserved')
     return_date = models.DateTimeField(blank=True, null=True, verbose_name='date returned')
+    fees = models.FloatField(blank=True, null=True, verbose_name='fees')
 
     def __str__(self):
         return self.client.name + " - " + self.book.name

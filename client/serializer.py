@@ -11,10 +11,10 @@ class ClientSerializer(serializers.ModelSerializer):
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'value', 'reserved']
 
 
 class ReserveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reserve
-        fields = ['id', 'client', 'book', 'client_name', 'book_name', 'reservation_date', 'return_date']
+        fields = ['id', 'client', 'book', 'client_name', 'book_name', 'reservation_date', 'return_date', 'fees']
