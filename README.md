@@ -1,6 +1,21 @@
 # agriness_library
 Agriness Developer Backend Challenge
 
+### Steps
+Abrir o terminal e executar os comandos:
+ 1. pipenv install
+ 2. python manage.py createsuperuser
+ 3. python manage.py migrate
+ 4. python manage.py runserver 8000
+
+Após ter os comandos executados:
+ - Acessar: http://127.0.0.1:8000/ no navegador
+ - Logar com super user criado anteriormente
+ - Criar Clients e Books na paǵina de Admin
+ - Importar collection library.postman_collection.json
+ - Executar operações disponíveis
+
+ 
 ### Usual commands
 python manage.py runserver 8000
 
