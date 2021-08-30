@@ -21,8 +21,8 @@ class Book(models.Model):
 class Reserve(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, models.CASCADE)
-    # client_name = models.CharField(default=client.name, blank=True, max_length=50)
-    # book_name = models.CharField(default=book.name, blank=True, max_length=20)
+    client_name = models.CharField(default=client.name, blank=True, null=True, max_length=50)
+    book_name = models.CharField(default=book.name, blank=True, null=True, max_length=20)
     reservation_date = models.DateTimeField(default=timezone.now, verbose_name='date reserved')
     return_date = models.DateTimeField(blank=True, null=True, verbose_name='date returned')
 

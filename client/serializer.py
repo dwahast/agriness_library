@@ -17,4 +17,4 @@ class BookSerializer(serializers.ModelSerializer):
 class ReserveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reserve
-        fields = ['id', 'client', 'book']
+        fields = ['id', 'client', 'book', 'client_name', 'book_name', 'reservation_date', 'return_date']

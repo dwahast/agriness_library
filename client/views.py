@@ -9,29 +9,36 @@ from rest_framework_extensions.mixins import NestedViewSetMixin
 
 # Create your views here.
 class ClientViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
-    model = Client
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
 
 class BookViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
-    model = Book
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
 
 class ReserveViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
-    model = Reserve
     queryset = Reserve.objects.all()
     serializer_class = ReserveSerializer
-    # @action(detail=True)
-    # def books(self, request, pk=None):
-    #     """
-    #     Returns a list of all the group names that the given
-    #     user belongs to.
-    #     """
-    #     books = Client.objects.filter(id=pk)
-    #     # serializer = self.get_serializer(books, many=True)
-    #     serializer = self.get_serializer(books)
-    #     return Response(serializer.data)
+
+    @action(methods=["POST"], detail=True)
+    def reserve(self, request, parent_lookup_client, pk):
+        """
+        Returns a list of all the group names that the given
+        user belongs to.
+        """
+        client = Client.objects.get(id=parent_lookup_client)
+        book = Book.objects.get(id=pk)
+        if not book.reserved:
+            book.reserved = True
+
+            new_reserve = Reserve(client=client, book=book, client_name=client.name, book_name=book.name)
+            new_reserve.save()
+            book.save()
+            return Response(data={"resultCode": 0, "message": f"livro {book.name} reservado com sucesso!"})
+
+        else:
+            return Response(status=400, data={"resultCode": 1, "message": f"livro {book.name} já reservado!"})
+
 
